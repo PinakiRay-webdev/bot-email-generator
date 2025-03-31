@@ -28,7 +28,10 @@ const SignUp = () => {
       createUserWithEmailAndPassword(auth, data.userEmail, data.userPassword)
         .then((credentials) => {
           const user = credentials.user;
-          console.log(user);
+          localStorage.setItem('userCredentials' , JSON.stringify({
+            userEmail: data.userEmail,
+            userPassword: data.userPassword
+          }))
           toast.success("login successfully", { theme: "dark" });
           setTimeout(() => {
             navigate('/')

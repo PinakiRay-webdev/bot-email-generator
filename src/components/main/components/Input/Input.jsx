@@ -4,11 +4,16 @@ import { toast, ToastContainer } from "react-toastify";
 import { generateFORM } from "../../../../../functions/geminiAI";
 import { generateMail } from "../../../../../functions/generateMail";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 
 let dynamicInputArray;
 
 const Input = () => {
+
+  const userData = JSON.parse(localStorage.getItem('userCredentials'))
+  const navigate = useNavigate();
+
   const [buttonText, setButtonText] = useState("Submit")
   const [buttonBgColor, setButtonBgColor] = useState("bg-green-500")
   const [mail, setMail] = useState("")
@@ -22,6 +27,13 @@ const Input = () => {
   const api_key = import.meta.env.VITE_API_KEY;
 
   const handleFormData = async (data) => {
+    if(!userData){
+      toast.warning(`Create an account first` , {theme : 'dark'})
+      setTimeout(() => {
+        navigate('/signup')
+      }, 1200);
+      return;
+    }
     toast.loading("submitting...", { theme: "dark" });
     await new Promise((resolve) => {
       setTimeout(() => {
@@ -262,8 +274,7 @@ const Input = () => {
         <div className="bg-zinc-800 px-4 py-6 mt-5 rounded-xl text-white w-[80%] mx-auto" >
           <p className="whitespace-pre-line" >{mail}</p>
         </div>
-      
-      <ToastContainer />
+        <ToastContainer/>
     </div>
   );
 };

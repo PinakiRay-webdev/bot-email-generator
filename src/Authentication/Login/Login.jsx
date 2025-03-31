@@ -27,6 +27,10 @@ const Login = () => {
       signInWithEmailAndPassword(auth, data.userEmail, data.userPassword)
         .then((credentials) => {
           const user = credentials.user;
+          localStorage.setItem('userCredentials' , JSON.stringify({
+            userEmail: data.userEmail,
+            userPassword: data.userPassword
+          }))
           toast.success("login successfully", { theme: "dark" });
           setTimeout(() => {
             navigate('/')
