@@ -259,7 +259,7 @@ const Input = () => {
         </div>
       </form>
 
-        <div>
+        <div className="bg-zinc-800 px-4 py-6 mt-5 rounded-xl text-white w-[80%] mx-auto" >
           <p className="whitespace-pre-line" >{mail}</p>
         </div>
       
