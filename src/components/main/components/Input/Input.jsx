@@ -40,7 +40,6 @@ const Input = () => {
         resolve();
       }, 1500);
     });
-  
     try {
       toast.dismiss();
       dynamicInputArray = await generateFORM(api_key, data.subject);
@@ -49,7 +48,6 @@ const Input = () => {
       dynamicInputArray.forEach((key) => {
         dynamicData[key] = data[key]?.trim() || `Default value for ${key}`;
       });
-  
       toast.success("Submitted!!", { theme: "dark" });
       setButtonText("Generate");
       setButtonBgColor("bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500");
@@ -63,6 +61,10 @@ const Input = () => {
       console.error(error);
     }
   };
+
+  const sendMail = () =>{
+    
+  }
 
   useEffect(() => {
     
@@ -234,7 +236,38 @@ const Input = () => {
 
 {dynamicInputArray !== undefined && (
           <fieldset
-            className={`border col-span-3 px-2 py-1 rounded-md ${
+            className={`border px-2 py-1 rounded-md ${
+              errors[dynamicInputArray[4]]
+                ? "border-red-500"
+                : "border-zinc-600"
+            }`}
+          >
+            <legend
+              className={`px-1 ${
+                errors[dynamicInputArray[4]] && "text-red-500"
+              } `}
+            >
+              {errors[dynamicInputArray[4]]
+                ? errors[dynamicInputArray[4]].message
+                : dynamicInputArray[4]}
+            </legend>
+            <input
+              {...register(dynamicInputArray[4], {
+                required: {
+                  value: true,
+                  message: "This is required",
+                },
+              })}
+              className="w-full outline-none"
+              type="text"
+              placeholder={`Let us know your ${[dynamicInputArray[4]]}`}
+            />
+          </fieldset>
+        )}
+
+{dynamicInputArray !== undefined && (
+          <fieldset
+            className={`border px-2 py-1 rounded-md ${
               errors[dynamicInputArray[5]]
                 ? "border-red-500"
                 : "border-zinc-600"
@@ -258,11 +291,103 @@ const Input = () => {
               })}
               className="w-full outline-none"
               type="text"
-              placeholder="Provide the reason behind this mail"
+              placeholder={`Let us know your ${[dynamicInputArray[5]]}`}
             />
           </fieldset>
         )}
 
+{dynamicInputArray !== undefined && (
+          <fieldset
+            className={`border px-2 py-1 rounded-md ${
+              errors[dynamicInputArray[6]]
+                ? "border-red-500"
+                : "border-zinc-600"
+            }`}
+          >
+            <legend
+              className={`px-1 ${
+                errors[dynamicInputArray[6]] && "text-red-500"
+              } `}
+            >
+              {errors[dynamicInputArray[6]]
+                ? errors[dynamicInputArray[6]].message
+                : dynamicInputArray[6]}
+            </legend>
+            <input
+              {...register(dynamicInputArray[6], {
+                required: {
+                  value: true,
+                  message: "This is required",
+                },
+              })}
+              className="w-full outline-none"
+              type="text"
+              placeholder={`Let us know your ${[dynamicInputArray[6]]}`}
+            />
+          </fieldset>
+        )}
+
+{dynamicInputArray !== undefined && (
+          <fieldset
+            className={`border px-2 py-1 rounded-md ${
+              errors[dynamicInputArray[7]]
+                ? "border-red-500"
+                : "border-zinc-600"
+            }`}
+          >
+            <legend
+              className={`px-1 ${
+                errors[dynamicInputArray[7]] && "text-red-500"
+              } `}
+            >
+              {errors[dynamicInputArray[7]]
+                ? errors[dynamicInputArray[7]].message
+                : dynamicInputArray[7]}
+            </legend>
+            <input
+              {...register(dynamicInputArray[7], {
+                required: {
+                  value: true,
+                  message: "This is required",
+                },
+              })}
+              className="w-full outline-none"
+              type="text"
+              placeholder={`Let us know your ${[dynamicInputArray[7]]}`}
+            />
+          </fieldset>
+        )}
+
+{dynamicInputArray !== undefined && (
+          <fieldset
+            className={`border px-2 py-1 rounded-md col-span-2 ${
+              errors[dynamicInputArray[8]]
+                ? "border-red-500"
+                : "border-zinc-600"
+            }`}
+          >
+            <legend
+              className={`px-1 ${
+                errors[dynamicInputArray[8]] && "text-red-500"
+              } `}
+            >
+              {errors[dynamicInputArray[8]]
+                ? errors[dynamicInputArray[8]].message
+                : dynamicInputArray[8]}
+            </legend>
+            <input
+              {...register(dynamicInputArray[8], {
+                required: {
+                  value: true,
+                  message: "This is required",
+                },
+              })}
+              className="w-full outline-none"
+              type="text"
+              placeholder={`Provide the reason behind this mail`}
+            />
+          </fieldset>
+        )}
 
         <div className="flex justify-center items-center col-span-3">
           <button className={`${buttonBgColor} text-black py-2 w-[20%] rounded-md cursor-pointer`}>
@@ -270,10 +395,13 @@ const Input = () => {
           </button>
         </div>
       </form>
-
+      
+      {mail !== "" && (
         <div className="bg-zinc-800 px-4 py-6 mt-5 rounded-xl text-white w-[80%] mx-auto" >
+          <button onClick={sendMail} >Send email</button>
           <p className="whitespace-pre-line" >{mail}</p>
         </div>
+      )}
         <ToastContainer/>
     </div>
   );

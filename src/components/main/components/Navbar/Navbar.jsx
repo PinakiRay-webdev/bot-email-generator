@@ -50,6 +50,10 @@ const Navbar = () => {
     displayGreet();
   }, []);
 
+  useEffect(()=>{
+
+  },[userData])
+
   return (
     <div>
       <div className="text-white flex justify-between items-center">
