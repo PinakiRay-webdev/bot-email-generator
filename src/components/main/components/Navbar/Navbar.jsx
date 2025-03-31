@@ -1,4 +1,5 @@
 import {useState , useEffect} from 'react'
+import { useNavigate } from 'react-router-dom';
 const Navbar = () => {
 
   const [greet, setGreet] = useState("");
@@ -17,6 +18,8 @@ const Navbar = () => {
     }
   }
 
+  const navigate = useNavigate();
+
   useEffect(() =>{
     displayGreet()
   } , []) 
@@ -27,7 +30,7 @@ const Navbar = () => {
       <h1 className='text-3xl' >{greet}</h1>
       <section id='accounts' className='flex gap-2' >
         <button className='ring-1 ring-gray-500 px-4 py-1 rounded' >Get started</button>
-        <button className='ring-1 bg-gray-500 px-4 py-1 rounded' >Login</button>
+        <button onClick={() => navigate('/login')} className='ring-1 bg-gray-500 px-4 py-1 rounded' >Login</button>
       </section>
     </div>
   )
