@@ -1,15 +1,23 @@
-import React from "react";
+import React , {useState} from "react";
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase/firebaseConfig";
 import { useNavigate } from "react-router-dom";
+import { IoEyeOff, IoEye } from "react-icons/io5";
+
 
 import "react-toastify/dist/ReactToastify.css";
 
 const SignUp = () => {
 
     const navigate = useNavigate();
+
+      const [isvisible, setIsvisible] = useState(false)
+    
+      const TogglePasswordVisiblity = () =>{
+            setIsvisible(!isvisible)
+      }
 
   const {
     register,
@@ -143,6 +151,7 @@ const SignUp = () => {
             >
               {errors.userPassword ? errors.userPassword.message : "Password"}
             </legend>
+            <div className="flex justify-baseline items-center" >
             <input
               {...register("userPassword", {
                 required: {
@@ -152,9 +161,15 @@ const SignUp = () => {
               })}
               autoComplete="false"
               className={`w-full outline-none`}
-              type="password"
+              type={isvisible ? "text" : "password"}
               placeholder="*********"
             />
+                          <p onClick={TogglePasswordVisiblity} className="cursor-pointer text-xl">
+                            {
+                                isvisible ? <IoEye /> : <IoEyeOff /> 
+                            }
+                          </p>
+            </div>
           </fieldset>
           <button
             className={`py-2 text-white bg-[#595959] w-full rounded my-6 ${
