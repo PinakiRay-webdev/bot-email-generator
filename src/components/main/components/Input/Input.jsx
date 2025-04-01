@@ -1,22 +1,21 @@
-import React, { useEffect , useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 import { generateFORM } from "../../../../../functions/geminiAI";
 import { generateMail } from "../../../../../functions/generateMail";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
-
+import { IoCopy } from "react-icons/io5";
 
 let dynamicInputArray;
 
 const Input = () => {
-
-  const userData = JSON.parse(localStorage.getItem('userCredentials'))
+  const userData = JSON.parse(localStorage.getItem("userCredentials"));
   const navigate = useNavigate();
 
-  const [buttonText, setButtonText] = useState("Submit")
-  const [buttonBgColor, setButtonBgColor] = useState("bg-green-500")
-  const [mail, setMail] = useState("")
+  const [buttonText, setButtonText] = useState("Submit");
+  const [buttonBgColor, setButtonBgColor] = useState("bg-green-500");
+  const [mail, setMail] = useState("");
   const {
     register,
     handleSubmit,
@@ -26,11 +25,12 @@ const Input = () => {
 
   const api_key = import.meta.env.VITE_API_KEY;
 
+  //handling form to get dynamic input
   const handleFormData = async (data) => {
-    if(!userData){
-      toast.warning(`Create an account first` , {theme : 'dark'})
+    if (!userData) {
+      toast.warning(`Create an account first`, { theme: "dark" });
       setTimeout(() => {
-        navigate('/signup')
+        navigate("/signup");
       }, 1200);
       return;
     }
@@ -43,15 +43,17 @@ const Input = () => {
     try {
       toast.dismiss();
       dynamicInputArray = await generateFORM(api_key, data.subject);
-  
+
       const dynamicData = {};
       dynamicInputArray.forEach((key) => {
         dynamicData[key] = data[key]?.trim() || `Default value for ${key}`;
       });
       toast.success("Submitted!!", { theme: "dark" });
       setButtonText("Generate");
-      setButtonBgColor("bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500");
-  
+      setButtonBgColor(
+        "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
+      );
+
       if (buttonText === "Generate") {
         setMail(await generateMail(api_key, data.subject, dynamicData));
       }
@@ -62,13 +64,16 @@ const Input = () => {
     }
   };
 
-  const sendMail = () =>{
-    
-  }
+  //copy to clipboard functionality
+  const copyToClipboard = () => {
+    if(mail){
+      navigator.clipboard.writeText(mail).then(()=>{
+        toast.success('copied to clipboard' , {theme: 'dark' , position: 'top-center' , autoClose: 1200})
+      })
+    }
+  };
 
-  useEffect(() => {
-    
-  }, [dynamicInputArray]);
+  useEffect(() => {}, [dynamicInputArray]);
 
   return (
     <div className="text-slate-400 mt-28">
@@ -202,7 +207,6 @@ const Input = () => {
           </fieldset>
         )}
 
-
         {dynamicInputArray !== undefined && (
           <fieldset
             className={`border px-2 py-1 rounded-md ${
@@ -234,7 +238,7 @@ const Input = () => {
           </fieldset>
         )}
 
-{dynamicInputArray !== undefined && (
+        {dynamicInputArray !== undefined && (
           <fieldset
             className={`border px-2 py-1 rounded-md ${
               errors[dynamicInputArray[4]]
@@ -265,7 +269,7 @@ const Input = () => {
           </fieldset>
         )}
 
-{dynamicInputArray !== undefined && (
+        {dynamicInputArray !== undefined && (
           <fieldset
             className={`border px-2 py-1 rounded-md ${
               errors[dynamicInputArray[5]]
@@ -296,7 +300,7 @@ const Input = () => {
           </fieldset>
         )}
 
-{dynamicInputArray !== undefined && (
+        {dynamicInputArray !== undefined && (
           <fieldset
             className={`border px-2 py-1 rounded-md ${
               errors[dynamicInputArray[6]]
@@ -327,7 +331,7 @@ const Input = () => {
           </fieldset>
         )}
 
-{dynamicInputArray !== undefined && (
+        {dynamicInputArray !== undefined && (
           <fieldset
             className={`border px-2 py-1 rounded-md ${
               errors[dynamicInputArray[7]]
@@ -358,7 +362,7 @@ const Input = () => {
           </fieldset>
         )}
 
-{dynamicInputArray !== undefined && (
+        {dynamicInputArray !== undefined && (
           <fieldset
             className={`border px-2 py-1 rounded-md col-span-2 ${
               errors[dynamicInputArray[8]]
@@ -390,19 +394,27 @@ const Input = () => {
         )}
 
         <div className="flex justify-center items-center col-span-3">
-          <button className={`${buttonBgColor} text-black py-2 w-[20%] rounded-md cursor-pointer`}>
+          <button
+            className={`${buttonBgColor} text-black py-2 w-[20%] rounded-md cursor-pointer`}
+          >
             {buttonText}
           </button>
         </div>
       </form>
-      
+
+      {/* mail output    */}
+
       {mail !== "" && (
-        <div className="bg-zinc-800 px-4 py-6 mt-5 rounded-xl text-white w-[80%] mx-auto" >
-          <button onClick={sendMail} >Send email</button>
-          <p className="whitespace-pre-line" >{mail}</p>
+        <div className="bg-zinc-800 px-4 py-6 mt-5 rounded-xl text-white w-[80%] mx-auto">
+          <header className="flex justify-end mb-5">
+            <p onClick={copyToClipboard} className="text-zinc-400 text-2xl cursor-pointer">
+              <IoCopy />
+            </p>
+          </header>
+          <p className="whitespace-pre-line">{mail}</p>
         </div>
       )}
-        <ToastContainer/>
+      <ToastContainer />
     </div>
   );
 };
