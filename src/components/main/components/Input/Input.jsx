@@ -7,7 +7,7 @@ import { generateMail } from "../../../../../functions/generateMail";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { IoCopy } from "react-icons/io5";
-import { MdGTranslate , MdKeyboardVoice } from "react-icons/md";
+import { MdGTranslate, MdKeyboardVoice } from "react-icons/md";
 import { makeTranslate } from "../../../../../functions/Translate";
 
 let dynamicInputArray = [];
@@ -16,6 +16,7 @@ const Input = () => {
   const userData = JSON.parse(localStorage.getItem("userCredentials"));
   const navigate = useNavigate();
 
+  const [formData, setFormData] = useState({});
   const [isSubmitVisible, setIsSubmitVisible] = useState("block");
   const [isGenerateVisible, setIsGenerateVisible] = useState("hidden");
   const [mail, setMail] = useState("");
@@ -35,7 +36,7 @@ const Input = () => {
   const api_key = import.meta.env.VITE_API_KEY;
 
   const resetForm = () => {
-    reset({ subject: ""});
+    reset({ subject: "" });
     setIsSubmitVisible("block");
     setIsGenerateVisible("hidden");
     setIsDynamicFormVisible("hidden");
@@ -44,8 +45,7 @@ const Input = () => {
     setDynamicData({});
   };
 
-  // submit functionality
-
+  // Submit functionality
   const handleFormData = async (data) => {
     if (!userData) {
       toast.warning("Create an account first", { theme: "dark" });
@@ -63,19 +63,13 @@ const Input = () => {
       reset({subject: translatedSubject})
       setIsSubmitVisible("hidden");
       setIsGenerateVisible("block");
-      setIsDynamicFormVisible("block")
+      setIsDynamicFormVisible("block");
 
-      // Generate dynamic input fields
+      setFormData(data);
+
       dynamicInputArray = await generateFORM(api_key, data.subject);
       setSub(data.subject);
 
-      // Prepare dynamic data
-      const tempDynamicData = {};
-      dynamicInputArray.forEach((key) => {
-        tempDynamicData[key] = data[key]?.trim() || `Default value for ${key}`;
-      });
-
-      setDynamicData(tempDynamicData);
       toast.success("Submitted!", { theme: "dark" });
     } catch (error) {
       toast.dismiss();
@@ -85,7 +79,15 @@ const Input = () => {
   };
 
   const genMail = async () => {
-    setMail(await generateMail(api_key, sub, dynamicData));
+    // Prepare dynamic data
+    const tempDynamicData = {};
+    dynamicInputArray.forEach((key) => {
+      tempDynamicData[key] = formData[key]?.trim();
+    });
+
+    setDynamicData(tempDynamicData);
+    console.log(tempDynamicData); // Log the dynamic data to verify
+    setMail(await generateMail(api_key, sub, tempDynamicData));
   };
 
   const copyToClipboard = () => {
@@ -108,7 +110,9 @@ const Input = () => {
   // Voice typing function
   const startVoiceTyping = () => {
     if (!("webkitSpeechRecognition" in window)) {
-      toast.error("Voice recognition is not supported in this browser.", { theme: "dark" });
+      toast.error("Voice recognition is not supported in this browser.", {
+        theme: "dark",
+      });
       return;
     }
 
@@ -124,7 +128,7 @@ const Input = () => {
 
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
-      setValue("subject", transcript); 
+      setValue("subject", transcript);
       toast.success("Voice input captured!", { theme: "dark" });
     };
 
@@ -145,7 +149,11 @@ const Input = () => {
         onSubmit={handleSubmit(handleFormData)}
         className="grid grid-cols-3 gap-6 w-[80%] mx-auto"
       >
-        <fieldset className={`border px-2 py-1 col-span-2 rounded-md ${errors.subject ? "border-red-500" : "border-zinc-600"}`}>
+        <fieldset
+          className={`border px-2 py-1 col-span-2 rounded-md ${
+            errors.subject ? "border-red-500" : "border-zinc-600"
+          }`}
+        >
           <legend className={`px-1 ${errors.subject && "text-red-500"}`}>
             {errors.subject ? errors.subject.message : "Subject"}
           </legend>
@@ -156,22 +164,37 @@ const Input = () => {
               type="text"
               placeholder="E.g leave application to HR"
             />
-            {isListening ? <p>Listening..</p> : <p onClick={startVoiceTyping} className="text-2xl cursor-pointer" ><MdKeyboardVoice /></p>}
+            {isListening ? (
+              <p>Listening..</p>
+            ) : (
+              <p onClick={startVoiceTyping} className="text-2xl cursor-pointer">
+                <MdKeyboardVoice />
+              </p>
+            )}
           </div>
         </fieldset>
 
         <fieldset className="border border-zinc-600 px-2 py-1 rounded-md">
           <legend className="px-1">Select Tone</legend>
           <select {...register("tone")} className="w-full">
-            <option className="text-black" value="Formal">Formal</option>
-            <option className="text-black" value="Informal">Informal</option>
+            <option className="text-black" value="Formal">
+              Formal
+            </option>
+            <option className="text-black" value="Informal">
+              Informal
+            </option>
           </select>
         </fieldset>
 
         <div className="grid grid-cols-3 col-span-3 gap-6">
           {dynamicInputArray.length > 0 &&
             dynamicInputArray.map((key, index) => (
-              <fieldset key={index} className={`border px-2 py-1 rounded-md ${isDynamicFormVisible} ${errors[key] ? "border-red-500" : "border-zinc-600"}`}>
+              <fieldset
+                key={index}
+                className={`border px-2 py-1 rounded-md ${isDynamicFormVisible} ${
+                  errors[key] ? "border-red-500" : "border-zinc-600"
+                }`}
+              >
                 <legend className={`px-1 ${errors[key] && "text-red-500"}`}>
                   {errors[key] ? errors[key].message : key}
                 </legend>
@@ -180,13 +203,21 @@ const Input = () => {
                   className="w-full outline-none"
                   type="text"
                   placeholder={`Provide ${key}`}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      [key]: e.target.value,
+                    }))
+                  }
                 />
               </fieldset>
             ))}
         </div>
 
         <div className="flex justify-center items-center col-span-3">
-          <button className={`bg-green-600 ${isSubmitVisible} text-black py-2 w-[20%] rounded-md cursor-pointer`}>
+          <button
+            className={`bg-green-600 ${isSubmitVisible} text-black py-2 w-[20%] rounded-md cursor-pointer`}
+          >
             Submit
           </button>
         </div>
@@ -216,8 +247,18 @@ const Input = () => {
       {mail !== "" && (
         <div className="bg-zinc-800 px-4 py-6 mt-5 rounded-xl text-white w-[80%] mx-auto">
           <header className="flex justify-end mb-5">
-            <p onClick={copyToClipboard} className="text-zinc-400 text-2xl cursor-pointer"><IoCopy /></p>
-            <p onClick={translateMail} className="text-zinc-400 text-2xl cursor-pointer"><MdGTranslate /></p>
+            <p
+              onClick={copyToClipboard}
+              className="text-zinc-400 text-2xl cursor-pointer"
+            >
+              <IoCopy />
+            </p>
+            <p
+              onClick={translateMail}
+              className="text-zinc-400 text-2xl cursor-pointer"
+            >
+              <MdGTranslate />
+            </p>
           </header>
           <p className="whitespace-pre-line">{mail}</p>
         </div>
