@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { IoCopy } from "react-icons/io5";
 import { MdGTranslate , MdKeyboardVoice } from "react-icons/md";
+import { makeTranslate } from "../../../../../functions/Translate";
 
 let dynamicInputArray = [];
 
@@ -43,6 +44,8 @@ const Input = () => {
     setDynamicData({});
   };
 
+  // submit functionality
+
   const handleFormData = async (data) => {
     if (!userData) {
       toast.warning("Create an account first", { theme: "dark" });
@@ -56,6 +59,8 @@ const Input = () => {
 
     try {
       toast.dismiss();
+      const translatedSubject = await makeTranslate(data.subject)
+      reset({subject: translatedSubject})
       setIsSubmitVisible("hidden");
       setIsGenerateVisible("block");
       setIsDynamicFormVisible("block")

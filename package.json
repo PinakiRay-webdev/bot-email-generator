@@ -12,6 +12,7 @@
   "dependencies": {
     "@google/genai": "^0.7.0",
     "@tailwindcss/vite": "^4.0.17",
+    "dotenv": "^16.4.7",
     "firebase": "^11.5.0",
     "google-translate-api-x": "^10.7.2",
     "react": "^19.0.0",

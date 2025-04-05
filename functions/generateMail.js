@@ -1,4 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
+import { makeTranslate } from "./Translate";
 
 export const generateMail = async (apikey, subject, dynamicData) => {
   if (!apikey || !subject || !dynamicData) {
@@ -11,10 +12,12 @@ export const generateMail = async (apikey, subject, dynamicData) => {
     .map(([key, value]) => `${key}: ${value}`)
     .join(", ");
 
+  const translatedSubject = await makeTranslate(subject); //for translation
+
   const response = await googleAI.models.generateContent({
     model: "gemini-2.0-flash",
     contents: `Write a professional email with the following details:
-    Subject: ${subject}
+    Subject: ${translatedSubject}
     Details: ${content}
 
     The email should include:
