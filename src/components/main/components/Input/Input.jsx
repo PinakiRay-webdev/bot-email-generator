@@ -34,15 +34,13 @@ const Input = () => {
   const api_key = import.meta.env.VITE_API_KEY;
 
   const resetForm = () => {
-    reset({ subject: "", tone: "" });
-    setTimeout(() => {
-      setIsSubmitVisible("block");
-      setIsGenerateVisible("hidden");
-      setIsDynamicFormVisible("hidden");
+    reset({ subject: ""});
+    setIsSubmitVisible("block");
+    setIsGenerateVisible("hidden");
+    setIsDynamicFormVisible("hidden");
 
-      dynamicInputArray = [];
-      setDynamicData({});
-    }, 100);
+    dynamicInputArray = [];
+    setDynamicData({});
   };
 
   const handleFormData = async (data) => {
@@ -60,6 +58,7 @@ const Input = () => {
       toast.dismiss();
       setIsSubmitVisible("hidden");
       setIsGenerateVisible("block");
+      setIsDynamicFormVisible("block")
 
       // Generate dynamic input fields
       dynamicInputArray = await generateFORM(api_key, data.subject);
