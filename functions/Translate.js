@@ -10,7 +10,7 @@ export const makeTranslate = async (text) =>{
     try {
         const response = await ai.models.generateContent({
             model: 'gemini-2.0-flash',
-            contents: `Translate ${text} into english. NOTE: ONLY MEANINGFUL TRANSLATION I WANT, NOT DESCRIPTIONS. GIVE ME ONLY ONE SUGGESTION`
+            contents: `Translate ${text} into english. NOTE: ONLY MEANINGFUL TRANSLATION I WANT, NOT DESCRIPTIONS. GIVE ME ONLY ONE SUGGESTION. If it is already is in english then no need to translate it. Just return the same text as it is.`
         })
 
         const resultedText = response.text;
