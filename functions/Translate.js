@@ -1,3 +1,5 @@
+// import dotenv from 'dotenv';
+// dotenv.config();
 import { GoogleGenAI } from "@google/genai";
 
 const api_key = 'AIzaSyD3zc4ljExAj6QhaCw3v_VYMYPbEf8eIp0'
@@ -18,3 +20,5 @@ export const makeTranslate = async (text) =>{
         console.log(error)
     }
 }
+
+console.log(api_key)
