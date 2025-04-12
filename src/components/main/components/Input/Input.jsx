@@ -59,6 +59,10 @@ const Input = () => {
 
     try {
       toast.dismiss();
+      dynamicInputArray = await generateFORM(api_key, data.subject);
+      if(dynamicInputArray === undefined){
+        throw new Error("Sorry!!! we create mail only");
+      }
       const translatedSubject = await makeTranslate(data.subject)
       reset({subject: translatedSubject})
       setIsSubmitVisible("hidden");
@@ -67,14 +71,13 @@ const Input = () => {
 
       setFormData(data);
 
-      dynamicInputArray = await generateFORM(api_key, data.subject);
+
       setSub(data.subject);
 
       toast.success("Submitted!", { theme: "dark" });
     } catch (error) {
       toast.dismiss();
-      toast.error("Submission failed!", { theme: "dark" });
-      console.error(error);
+      toast.error(error.message, { theme: "dark" });
     }
   };
 
@@ -86,7 +89,6 @@ const Input = () => {
     });
 
     setDynamicData(tempDynamicData);
-    console.log(tempDynamicData); // Log the dynamic data to verify
     setMail(await generateMail(api_key, sub, tempDynamicData));
   };
 
@@ -187,7 +189,7 @@ const Input = () => {
         </fieldset>
 
         <div className="grid grid-cols-3 col-span-3 gap-6">
-          {dynamicInputArray.length > 0 &&
+          {dynamicInputArray !== undefined &&
             dynamicInputArray.map((key, index) => (
               <fieldset
                 key={index}

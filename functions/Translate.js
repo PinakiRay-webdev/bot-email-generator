@@ -20,5 +20,3 @@ export const makeTranslate = async (text) =>{
         console.log(error)
     }
 }
-
-console.log(api_key)
