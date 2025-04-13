@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 import { generateFORM } from "../../../../../functions/geminiAI";
@@ -37,8 +37,8 @@ const Input = () => {
     setValue,
   } = useForm();
 
-  React.useEffect(() => {
-    if (dynamicInputArray === undefined ) {
+  useEffect(() => {
+    if (typeof(dynamicInputArray) === 'string' ) {
       setErrorBoxVisibility('absolute');
     } else {
       setErrorBoxVisibility('hidden');
@@ -73,9 +73,10 @@ const Input = () => {
     try {
       toast.dismiss();
       dynamicInputArray = await generateFORM(api_key, data.subject);
-      if (dynamicInputArray === undefined) {
+      if (typeof(dynamicInputArray) === 'string') {
+
         setSuggestion(await makeSuggestion(data.subject))
-        throw new Error("Sorry!!! we create mail only");
+        throw new Error(dynamicInputArray);
       }
       setIsSubjectEditable(!isSubjectEditable)
       const translatedSubject = await makeTranslate(data.subject);
@@ -201,7 +202,7 @@ const Input = () => {
           
           {/* dynamic form input */}
         <div className="grid grid-cols-3 col-span-3 gap-6">
-          {dynamicInputArray!==undefined && dynamicInputArray.map((key, index) => (
+          {typeof(dynamicInputArray) === 'object' && dynamicInputArray.map((key, index) => (
               <fieldset
                 key={index}
                 className={`border px-2 py-1 rounded-md ${isDynamicFormVisible} ${

@@ -1,11 +1,17 @@
 import {GoogleGenAI} from '@google/genai'
 import { checkValidPrompt } from './checkPrompt';
+import { checkViolence } from './checkHatefull';
 
 export const generateFORM = async (api_key , subject) =>{
     try {
+        const isViolence = await checkViolence(subject);
         const isValid = await checkValidPrompt(subject);
-        if(isValid === 'false'){
-            throw new Error('Sorry!!!, we generate email only.')
+        if(isViolence === 'true'){
+            throw new Error("Sorry we don't provide violence or hatefull speech");
+        }else{
+            if(isValid === 'false'){
+                throw new Error('Sorry!!!, we generate email only.')
+            }
         }
         const ai = new GoogleGenAI({apiKey : api_key})
         const response = await ai.models.generateContent({
@@ -17,6 +23,7 @@ export const generateFORM = async (api_key , subject) =>{
         console.log(responseArray)
         return responseArray   
     } catch (error) {
-        console.log(error.message)
+        const errorMesaage = error.message;
+        return errorMesaage;
     }
 }
