@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import translate from "google-translate-api-x";
 import { toast, ToastContainer } from "react-toastify";
 import { generateFORM } from "../../../../../functions/geminiAI";
 import { generateMail } from "../../../../../functions/generateMail";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 import { IoCopy } from "react-icons/io5";
-import { MdGTranslate, MdKeyboardVoice } from "react-icons/md";
+import { MdKeyboardVoice } from "react-icons/md";
 import { makeTranslate } from "../../../../../functions/Translate";
 import { makeSuggestion } from "../../../../../functions/Suggestion";
 import ErrorBox from "./component/ErrorBox";
@@ -119,10 +118,6 @@ const Input = () => {
     }
   };
 
-  const translateMail = async () => {
-    const response = await translate(mail, { to: "hi" });
-    setMail(response.text);
-  };
 
   // Voice typing function
   const startVoiceTyping = () => {
@@ -270,12 +265,6 @@ const Input = () => {
               className="text-zinc-400 text-2xl cursor-pointer"
             >
               <IoCopy />
-            </p>
-            <p
-              onClick={translateMail}
-              className="text-zinc-400 text-2xl cursor-pointer"
-            >
-              <MdGTranslate />
             </p>
           </header>
           <p className="whitespace-pre-line">{mail}</p>
