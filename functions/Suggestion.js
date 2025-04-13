@@ -10,7 +10,7 @@ export const makeSuggestion = async (topic) =>{
     try {
         const response = await ai.models.generateContent({
             model: 'gemini-2.0-flash',
-            contents: `Given topic is ${topic}. You need to tell display that what the things that user needs to do in order to execute the given task (topic). Give the user in a single parameter. Don't make a big paragraph just give simple and straight forward answer`
+            contents: `Display the nice and professional instructions how can someone perform the "${topic}" task. Display a single short and strait forward paragarph.`
         })
 
         const resultedText = response.text;

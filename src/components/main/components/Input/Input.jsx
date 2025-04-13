@@ -10,6 +10,7 @@ import { IoCopy } from "react-icons/io5";
 import { MdGTranslate, MdKeyboardVoice } from "react-icons/md";
 import { makeTranslate } from "../../../../../functions/Translate";
 import { makeSuggestion } from "../../../../../functions/Suggestion";
+import ErrorBox from "./component/ErrorBox";
 
 let dynamicInputArray = [];
 
@@ -26,6 +27,8 @@ const Input = () => {
   const [dynamicData, setDynamicData] = useState({});
   const [isListening, setIsListening] = useState(false);
   const [suggestion, setSuggestion] = useState("");
+  const [errorBoxVisibility, setErrorBoxVisibility] = useState("hidden")
+  const [isSubjectEditable, setIsSubjectEditable] = useState(true)
 
   const {
     register,
@@ -35,6 +38,14 @@ const Input = () => {
     setValue,
   } = useForm();
 
+  React.useEffect(() => {
+    if (dynamicInputArray === undefined ) {
+      setErrorBoxVisibility('absolute');
+    } else {
+      setErrorBoxVisibility('hidden');
+    }
+  }, [dynamicInputArray])
+
   const api_key = import.meta.env.VITE_API_KEY;
 
   const resetForm = () => {
@@ -42,6 +53,7 @@ const Input = () => {
     setIsSubmitVisible("block");
     setIsGenerateVisible("hidden");
     setIsDynamicFormVisible("hidden");
+    setIsSubjectEditable(!isSubjectEditable)
 
     dynamicInputArray = [];
     setDynamicData({});
@@ -66,6 +78,7 @@ const Input = () => {
         setSuggestion(await makeSuggestion(data.subject))
         throw new Error("Sorry!!! we create mail only");
       }
+      setIsSubjectEditable(!isSubjectEditable)
       const translatedSubject = await makeTranslate(data.subject);
       reset({ subject: translatedSubject });
       setIsSubmitVisible("hidden");
@@ -163,10 +176,11 @@ const Input = () => {
           </legend>
           <div className="flex items-center">
             <input
-              {...register("subject", { required: "Subject is required" })}
-              className="w-full outline-none"
+              {...register("subject", { required: "Subject is required"})}
+              className={`w-full outline-none ${!isSubjectEditable && "cursor-not-allowed"}`}
               type="text"
               placeholder="E.g leave application to HR"
+              disabled={!isSubjectEditable}
             />
             {isListening ? (
               <p>Listening..</p>
@@ -192,7 +206,7 @@ const Input = () => {
           
           {/* dynamic form input */}
         <div className="grid grid-cols-3 col-span-3 gap-6">
-          {dynamicInputArray !== undefined ? (dynamicInputArray.map((key, index) => (
+          {dynamicInputArray!==undefined && dynamicInputArray.map((key, index) => (
               <fieldset
                 key={index}
                 className={`border px-2 py-1 rounded-md ${isDynamicFormVisible} ${
@@ -215,7 +229,7 @@ const Input = () => {
                   }
                 />
               </fieldset>
-            ))) : (<p className="text-white font-semibold text-lg col-span-3" >{suggestion}</p>) }
+            ))}
         </div>
 
         <div className="flex justify-center items-center col-span-3">
@@ -268,6 +282,7 @@ const Input = () => {
         </div>
       )}
 
+      <ErrorBox errorBoxVisibility={errorBoxVisibility} setErrorBoxVisibilit={setErrorBoxVisibility} suggestion={suggestion} />
       <ToastContainer />
     </div>
   );
