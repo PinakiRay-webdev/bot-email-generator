@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { IoCopy } from "react-icons/io5";
 import { MdGTranslate, MdKeyboardVoice } from "react-icons/md";
 import { makeTranslate } from "../../../../../functions/Translate";
+import { makeSuggestion } from "../../../../../functions/Suggestion";
 
 let dynamicInputArray = [];
 
@@ -24,6 +25,7 @@ const Input = () => {
   const [sub, setSub] = useState("");
   const [dynamicData, setDynamicData] = useState({});
   const [isListening, setIsListening] = useState(false);
+  const [suggestion, setSuggestion] = useState("");
 
   const {
     register,
@@ -60,17 +62,17 @@ const Input = () => {
     try {
       toast.dismiss();
       dynamicInputArray = await generateFORM(api_key, data.subject);
-      if(dynamicInputArray === undefined){
+      if (dynamicInputArray === undefined) {
+        setSuggestion(await makeSuggestion(data.subject))
         throw new Error("Sorry!!! we create mail only");
       }
-      const translatedSubject = await makeTranslate(data.subject)
-      reset({subject: translatedSubject})
+      const translatedSubject = await makeTranslate(data.subject);
+      reset({ subject: translatedSubject });
       setIsSubmitVisible("hidden");
       setIsGenerateVisible("block");
       setIsDynamicFormVisible("block");
 
       setFormData(data);
-
 
       setSub(data.subject);
 
@@ -187,10 +189,10 @@ const Input = () => {
             </option>
           </select>
         </fieldset>
-
+          
+          {/* dynamic form input */}
         <div className="grid grid-cols-3 col-span-3 gap-6">
-          {dynamicInputArray !== undefined &&
-            dynamicInputArray.map((key, index) => (
+          {dynamicInputArray !== undefined ? (dynamicInputArray.map((key, index) => (
               <fieldset
                 key={index}
                 className={`border px-2 py-1 rounded-md ${isDynamicFormVisible} ${
@@ -213,7 +215,7 @@ const Input = () => {
                   }
                 />
               </fieldset>
-            ))}
+            ))) : (<p className="text-white font-semibold text-lg col-span-3" >{suggestion}</p>) }
         </div>
 
         <div className="flex justify-center items-center col-span-3">

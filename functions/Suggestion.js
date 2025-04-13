@@ -6,11 +6,11 @@ const api_key = 'AIzaSyD3zc4ljExAj6QhaCw3v_VYMYPbEf8eIp0'
 
 const ai = new GoogleGenAI({apiKey: api_key})
 
-export const makeTranslate = async (text) =>{
+export const makeSuggestion = async (topic) =>{
     try {
         const response = await ai.models.generateContent({
             model: 'gemini-2.0-flash',
-            contents: `Translate the following text into English: "${text}". If the text is already in English, return it unchanged. Provide only the translated text without additional comments or suggestions.`
+            contents: `Given topic is ${topic}. You need to tell display that what the things that user needs to do in order to execute the given task (topic). Give the user in a single parameter. Don't make a big paragraph just give simple and straight forward answer`
         })
 
         const resultedText = response.text;
