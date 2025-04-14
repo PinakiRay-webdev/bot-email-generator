@@ -9,7 +9,9 @@ import { IoCopy } from "react-icons/io5";
 import { MdKeyboardVoice } from "react-icons/md";
 import { makeTranslate } from "../../../../../functions/Translate";
 import { makeSuggestion } from "../../../../../functions/Suggestion";
+import { checkGovernmental } from "../../../../../functions/checkGovernment";
 import ErrorBox from "./component/ErrorBox";
+import GovtConfirmBox from "./component/GovtConfirmBox";
 
 let dynamicInputArray = [];
 
@@ -26,7 +28,8 @@ const Input = () => {
   const [dynamicData, setDynamicData] = useState({});
   const [isListening, setIsListening] = useState(false);
   const [suggestion, setSuggestion] = useState("");
-  const [errorBoxVisibility, setErrorBoxVisibility] = useState("hidden")
+  const [errorBoxVisibility, setErrorBoxVisibility] = useState("hidden");
+  const [govtBoxVisibility, setGovtBoxVisibility] = useState("hidden")
   const [isSubjectEditable, setIsSubjectEditable] = useState(true)
 
   const {
@@ -60,6 +63,7 @@ const Input = () => {
 
   // Submit functionality
   const handleFormData = async (data) => {
+    
     if (!userData) {
       toast.warning("Create an account first", { theme: "dark" });
       setTimeout(() => navigate("/signup"), 1200);
@@ -67,6 +71,12 @@ const Input = () => {
     }
 
     toast.loading("Submitting...", { theme: "dark" });
+
+    const isGovtApproved = await checkGovernmental(data.subject);
+    
+    if(isGovtApproved === 'true'){
+      setGovtBoxVisibility('absolute')
+    }
 
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
@@ -273,6 +283,7 @@ const Input = () => {
       )}
 
       <ErrorBox errorBoxVisibility={errorBoxVisibility} setErrorBoxVisibilit={setErrorBoxVisibility} suggestion={suggestion} />
+      <GovtConfirmBox govtBoxVisibility={govtBoxVisibility} setGovtBoxVisibility={setGovtBoxVisibility} />
       <ToastContainer />
     </div>
   );
