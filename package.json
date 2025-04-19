@@ -15,6 +15,7 @@
     "dotenv": "^16.4.7",
     "firebase": "^11.5.0",
     "google-translate-api-x": "^10.7.2",
+    "googleapis": "^148.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
