@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Login from "./Authentication/Login/Login";
 import SignUp from "./Authentication/SignUp/SignUp";
 import Home from "./Pages/Home/Home";
+import Meeting from "./Pages/Meeting/Meeting";
 const App = () => {
   const endpoints = createBrowserRouter([
     {
@@ -18,6 +19,12 @@ const App = () => {
           <Sidenav />
           <Main />
         </div>
+      ),
+    },
+    {
+      path: "/meeting",
+      element: (
+        <Meeting/>
       ),
     },
     {
