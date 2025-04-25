@@ -5,7 +5,6 @@ import { toast, ToastContainer } from "react-toastify";
 import { generateFORM } from "../../../../../functions/geminiAI";
 import { generateMail } from "../../../../../functions/generateMail";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
 import { IoCopy } from "react-icons/io5";
 import { MdKeyboardVoice } from "react-icons/md";
 import { makeTranslate } from "../../../../../functions/Translate";
@@ -21,9 +20,6 @@ import ScheduleMeeting from "./component/ScheduleMeeting";
 let dynamicInputArray = [];
 
 const Input = () => {
-  const userData = JSON.parse(localStorage.getItem("userCredentials"));
-  const navigate = useNavigate();
-
   const [session, setSession] = useState(null);
   const [formData, setFormData] = useState({});
   const [isSubmitVisible, setIsSubmitVisible] = useState("block");
