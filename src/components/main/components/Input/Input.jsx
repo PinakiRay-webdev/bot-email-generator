@@ -32,7 +32,7 @@ const Input = () => {
   const [suggestion, setSuggestion] = useState("");
   const [errorBoxVisibility, setErrorBoxVisibility] = useState("hidden");
   const [govtBoxVisibility, setGovtBoxVisibility] = useState("hidden")
-  const [isGoogleMeetingOpen, setIsGoogleMeetingOpen] = useState("absolute")
+  const [isGoogleMeetingOpen, setIsGoogleMeetingOpen] = useState("hidden")
   const [isSubjectEditable, setIsSubjectEditable] = useState(true)
 
   const {
