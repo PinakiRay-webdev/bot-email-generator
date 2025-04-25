@@ -1,5 +1,6 @@
 import React, { useState , useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { supabase } from "../../../../../supabaseClient";
 import { toast, ToastContainer } from "react-toastify";
 import { generateFORM } from "../../../../../functions/geminiAI";
 import { generateMail } from "../../../../../functions/generateMail";
@@ -14,12 +15,14 @@ import ErrorBox from "./component/ErrorBox";
 import GovtConfirmBox from "./component/GovtConfirmBox";
 
 
+
 let dynamicInputArray = [];
 
 const Input = () => {
   const userData = JSON.parse(localStorage.getItem("userCredentials"));
   const navigate = useNavigate();
 
+  const [session, setSession] = useState(null);
   const [formData, setFormData] = useState({});
   const [isSubmitVisible, setIsSubmitVisible] = useState("block");
   const [isGenerateVisible, setIsGenerateVisible] = useState("hidden");
@@ -49,6 +52,20 @@ const Input = () => {
     }
   }, [dynamicInputArray])
 
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   const api_key = import.meta.env.VITE_API_KEY;
 
   const resetForm = () => {
@@ -65,9 +82,8 @@ const Input = () => {
   // Submit functionality
   const handleFormData = async (data) => {
     
-    if (!userData) {
+    if (!session) {
       toast.warning("Create an account first", { theme: "dark" });
-      setTimeout(() => navigate("/signup"), 1200);
       return;
     }
 
