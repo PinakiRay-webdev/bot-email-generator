@@ -13,6 +13,8 @@ import { makeSuggestion } from "../../../../../functions/Suggestion";
 import { checkGovernmental } from "../../../../../functions/checkGovernment";
 import ErrorBox from "./component/ErrorBox";
 import GovtConfirmBox from "./component/GovtConfirmBox";
+import { checkMeeting } from "../../../../../functions/checkForMeeting";
+import ScheduleMeeting from "./component/ScheduleMeeting";
 
 
 
@@ -34,6 +36,7 @@ const Input = () => {
   const [suggestion, setSuggestion] = useState("");
   const [errorBoxVisibility, setErrorBoxVisibility] = useState("hidden");
   const [govtBoxVisibility, setGovtBoxVisibility] = useState("hidden")
+  const [isGoogleMeetingOpen, setIsGoogleMeetingOpen] = useState("absolute")
   const [isSubjectEditable, setIsSubjectEditable] = useState(true)
 
   const {
@@ -132,6 +135,10 @@ const Input = () => {
 
     setDynamicData(tempDynamicData);
     setMail(await generateMail(api_key, sub, tempDynamicData));
+    const isMeeting = await checkMeeting(sub)
+    if(isMeeting){
+      setIsGoogleMeetingOpen("absolute")
+    }
   };
 
   const copyToClipboard = () => {
@@ -301,6 +308,7 @@ const Input = () => {
 
       <ErrorBox errorBoxVisibility={errorBoxVisibility} setErrorBoxVisibilit={setErrorBoxVisibility} suggestion={suggestion} />
       <GovtConfirmBox govtBoxVisibility={govtBoxVisibility} setGovtBoxVisibility={setGovtBoxVisibility} />
+      <ScheduleMeeting isGoogleMeetingOpen = {isGoogleMeetingOpen} setIsGoogleMeetingOpen = {setIsGoogleMeetingOpen} />
       <ToastContainer />
     </div>
   );
