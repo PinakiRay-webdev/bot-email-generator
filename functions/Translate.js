@@ -6,11 +6,11 @@ const api_key = 'AIzaSyD3zc4ljExAj6QhaCw3v_VYMYPbEf8eIp0'
 
 const ai = new GoogleGenAI({apiKey: api_key})
 
-export const makeTranslate = async (text) =>{
+const makeTranslate = async (text) =>{
     try {
         const response = await ai.models.generateContent({
             model: 'gemini-2.0-flash',
-            contents: `Translate the following text into English: "${text}". If the text is already in English, return it unchanged. Provide only the translated text without additional comments or suggestions.`
+            contents: `Translate the following text into English only: "${text}". If the text is already in English, return it unchanged. Provide only the translated text without additional comments or suggestions.`
         })
 
         const resultedText = response.text;
@@ -20,3 +20,5 @@ export const makeTranslate = async (text) =>{
         console.log(error)
     }
 }
+
+makeTranslate('client ke liye interview mail')
