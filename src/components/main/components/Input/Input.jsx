@@ -245,7 +245,7 @@ const Input = () => {
                 <input
                   {...register(key, { required: "This is required" })}
                   className="w-full outline-none"
-                  type="text"
+                  type={key.toLowerCase().includes('date') ? 'date' : key.toLowerCase().includes('time') ? 'time' : 'text'}
                   placeholder={`Provide ${key}`}
                   onChange={(e) =>
                     setFormData((prev) => ({
