@@ -8,6 +8,7 @@ export const checkMeeting = async (prompt) =>{
             model: 'gemini-2.0-flash',
             contents:`"${prompt}" if this form is asking for any meeting schedulement? Display "true" or "false" only.`
         })
+        console.log(response.text.toLocaleLowerCase().trim());
         return response.text.toLowerCase().trim()
     } catch (error) {
         console.log(error.message)        
