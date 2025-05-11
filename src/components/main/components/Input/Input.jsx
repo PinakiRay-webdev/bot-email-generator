@@ -14,7 +14,7 @@ import ErrorBox from "./component/ErrorBox";
 import GovtConfirmBox from "./component/GovtConfirmBox";
 import { checkMeeting } from "../../../../../functions/checkForMeeting";
 import ScheduleMeeting from "./component/ScheduleMeeting";
-import emailjs from 'emailjs-com'
+import emailjs from "emailjs-com";
 
 let dynamicInputArray = [];
 
@@ -37,13 +37,13 @@ const Input = () => {
   const [scheduleTime, setScheduleTime] = useState(null);
   const [loggedInUser, setLoggedInUser] = useState("");
 
-useEffect(() => {
-  supabase.auth.getSession().then(({ data: { session } }) => {
-    if (session?.user?.email) {
-      setLoggedInUser(session.user.email)
-    }
-  });
-}, []);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user?.email) {
+        setLoggedInUser(session.user.email);
+      }
+    });
+  }, []);
 
   // --- React Hook Form ---
   const {
@@ -169,12 +169,14 @@ useEffect(() => {
     }
   };
 
+
 const genMail = async () => {
   const currentFormValues = getValues();
 
   const tempDynamicData = {};
   let foundDateKey = null;
   let foundTimeKey = null;
+  let recipientEmail = null;
 
   if (
     typeof dynamicInputArray !== "object" ||
@@ -200,6 +202,9 @@ const genMail = async () => {
     if (!foundTimeKey && key.toLowerCase().includes("time")) {
       foundTimeKey = key;
     }
+    if (!recipientEmail && key.toLowerCase() === "to") {
+      recipientEmail = tempDynamicData[key];
+    }
   });
 
   const dateValue = foundDateKey ? tempDynamicData[foundDateKey] : null;
@@ -209,6 +214,11 @@ const genMail = async () => {
   setScheduleTime(timeValue);
 
   setDynamicData(tempDynamicData);
+
+  if (!recipientEmail) {
+    toast.error("Recipient email (To) is missing.", { theme: "dark" });
+    return;
+  }
 
   toast.loading("Generating mail...", { theme: "dark", autoClose: false });
   try {
@@ -224,14 +234,16 @@ const genMail = async () => {
     
     toast.loading("Sending email...", { theme: "dark", autoClose: false });
     const emailParams = {
-      to_email: loggedInUser,
+      to_email: recipientEmail,
+      from_email: loggedInUser,
       subject: sub,
       message: generatedMailContent,
+
     };
 
     emailjs
       .send(
-        "service_0g5sarg",  
+        "service_0g5sarg",
         "template_aeoxcny",
         emailParams,
         "4DQhQ16fMjXCVTJB1"
@@ -372,10 +384,13 @@ const genMail = async () => {
         <fieldset
           className={`border px-3 py-2 col-span-1 rounded-md transition-colors ${"border-zinc-600 focus-within:border-blue-500"}`}
         >
-          <legend className="px-1 text-sm text-zinc-400">
-            User
-          </legend>
-            <input type="email" placeholder={loggedInUser} disabled={true} className="cursor-not-allowed w-full"/>
+          <legend className="px-1 text-sm text-zinc-400">User</legend>
+          <input
+            type="email"
+            placeholder={loggedInUser}
+            disabled={true}
+            className="cursor-not-allowed w-full"
+          />
         </fieldset>
 
         <fieldset
