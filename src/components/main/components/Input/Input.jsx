@@ -338,7 +338,7 @@ const genMail = async () => {
         className="grid grid-cols-3 gap-4 md:gap-6 w-[90%] md:w-[80%] mx-auto mt-8"
       >
         <fieldset
-          className={`border px-3 py-2 col-span-1 rounded-md transition-colors ${
+          className={`border px-3 py-2 col-span-2 rounded-md transition-colors ${
             errors.subject
               ? "border-red-500"
               : "border-zinc-600 focus-within:border-blue-500"
@@ -379,18 +379,6 @@ const genMail = async () => {
                 </button>
               ))}
           </div>
-        </fieldset>
-
-        <fieldset
-          className={`border px-3 py-2 col-span-1 rounded-md transition-colors ${"border-zinc-600 focus-within:border-blue-500"}`}
-        >
-          <legend className="px-1 text-sm text-zinc-400">User</legend>
-          <input
-            type="email"
-            placeholder={loggedInUser}
-            disabled={true}
-            className="cursor-not-allowed w-full"
-          />
         </fieldset>
 
         <fieldset
