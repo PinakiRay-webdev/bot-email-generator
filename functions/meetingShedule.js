@@ -1,7 +1,4 @@
-import { google } from 'googleapis';
-import { auth } from '../src/firebase/firebaseConfig';
-
-export const schedule_meeting = async ({ date, time, topic }) => {
+export const schedule_meeting = async ({ date, time, topic, attendees }) => {
   try {
     const currentUser = auth.currentUser
     if (!currentUser) {
@@ -10,10 +7,7 @@ export const schedule_meeting = async ({ date, time, topic }) => {
     }
 
     const firebaseToken = await currentUser.getIdToken();
-
     const calendar = google.calendar({ version: 'v3' });
-
-    // Set the Firebase token as the authorization header
     const authClient = new google.auth.OAuth2();
     authClient.setCredentials({ access_token: firebaseToken });
 
@@ -24,23 +18,23 @@ export const schedule_meeting = async ({ date, time, topic }) => {
       summary: topic,
       start: {
         dateTime: startDateTime.toISOString(),
-        timeZone: 'Asia/Kolkata', 
+        timeZone: 'Asia/Kolkata',
       },
       end: {
         dateTime: endDateTime.toISOString(),
         timeZone: 'Asia/Kolkata',
       },
-      attendees: [
-        { email: 'bob@example.com' },
-        { email: 'alice@example.com' },
-      ],
+      attendees: attendees.map(email => ({ email })),
+      // attendees : {
+      //   email : "pinaki.mongodb@gmail.com"
+      // }
     };
 
-    // Insert the event into the user's primary calendar
     const response = await calendar.events.insert({
       auth: authClient,
       calendarId: 'primary',
       resource: event,
+      sendUpdates: 'all',
     });
 
     console.log(`Meeting scheduled: ${response.data.htmlLink}`);

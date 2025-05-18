@@ -36,6 +36,7 @@ const Input = () => {
   const [scheduleDate, setScheduleDate] = useState(null);
   const [scheduleTime, setScheduleTime] = useState(null);
   const [loggedInUser, setLoggedInUser] = useState("");
+  const [recipientEmail, setRecipientEmail] = useState("");
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -169,14 +170,13 @@ const Input = () => {
     }
   };
 
-
 const genMail = async () => {
   const currentFormValues = getValues();
 
   const tempDynamicData = {};
   let foundDateKey = null;
   let foundTimeKey = null;
-  let recipientEmail = null;
+  let recipientEmailLocal = null;
 
   if (
     typeof dynamicInputArray !== "object" ||
@@ -202,8 +202,8 @@ const genMail = async () => {
     if (!foundTimeKey && key.toLowerCase().includes("time")) {
       foundTimeKey = key;
     }
-    if (!recipientEmail && key.toLowerCase() === "to") {
-      recipientEmail = tempDynamicData[key];
+    if (!recipientEmailLocal && key.toLowerCase() === "to") {
+      recipientEmailLocal = tempDynamicData[key];
     }
   });
 
@@ -214,31 +214,28 @@ const genMail = async () => {
   setScheduleTime(timeValue);
 
   setDynamicData(tempDynamicData);
+  setRecipientEmail(recipientEmailLocal); // Optional: If you use it elsewhere
 
-  if (!recipientEmail) {
+  if (!recipientEmailLocal) {
     toast.error("Recipient email (To) is missing.", { theme: "dark" });
     return;
   }
 
   toast.loading("Generating mail...", { theme: "dark", autoClose: false });
+
   try {
-    const generatedMailContent = await generateMail(
-      api_key,
-      sub,
-      tempDynamicData
-    );
+    const generatedMailContent = await generateMail(api_key, sub, tempDynamicData);
     setMail(generatedMailContent);
     toast.dismiss();
     toast.success("Mail generated successfully!", { theme: "dark" });
 
-    
     toast.loading("Sending email...", { theme: "dark", autoClose: false });
+
     const emailParams = {
-      to_email: recipientEmail,
+      to_email: recipientEmailLocal, // ✅ Use direct value here
       from_email: loggedInUser,
       subject: sub,
       message: generatedMailContent,
-
     };
 
     emailjs
@@ -258,7 +255,6 @@ const genMail = async () => {
       });
 
     const isMeeting = await checkMeeting(sub);
-
     if (isMeeting && dateValue && timeValue) {
       setIsGoogleMeetingOpen("absolute");
     } else {
@@ -270,6 +266,7 @@ const genMail = async () => {
     setIsGoogleMeetingOpen("hidden");
   }
 };
+
 
   const copyToClipboard = () => {
     if (mail) {
@@ -520,6 +517,7 @@ const genMail = async () => {
         sub={sub}
         date={scheduleDate || ""}
         time={scheduleTime || ""}
+        attendees={[loggedInUser, recipientEmail].filter(Boolean)} // 3. Pass attendees prop
       />
       <ToastContainer
         position="bottom-right"
