@@ -38,8 +38,8 @@ const Navbar = () => {
           Smart<span className="text-purple-900">Draft</span>
         </h1>
         <div className="flex gap-5">
-          {navItems.map((item) => (
-            <p className="capitalize cursor-pointer font-semibold">{item}</p>
+          {navItems.map((item , id) => (
+            <p key={id} className="capitalize cursor-pointer font-semibold">{item}</p>
           ))}
         </div>
         {!session ? (

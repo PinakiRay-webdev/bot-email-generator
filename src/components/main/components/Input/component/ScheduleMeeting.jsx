@@ -3,8 +3,13 @@ import { IoIosCloseCircle } from "react-icons/io";
 import googleIcon from "../../../../../assets/google.svg";
 import { supabase } from "../../../../../../supabaseClient";
 
-const ScheduleMeeting = ({ isGoogleMeetingOpen, setIsGoogleMeetingOpen , sub , date , time }) => {
-
+const ScheduleMeeting = ({
+  isGoogleMeetingOpen,
+  setIsGoogleMeetingOpen,
+  sub,
+  date,
+  time,
+}) => {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -27,61 +32,76 @@ const ScheduleMeeting = ({ isGoogleMeetingOpen, setIsGoogleMeetingOpen , sub , d
     return () => listener?.subscription.unsubscribe();
   }, []);
 
-  const proceedEvent = async () => {
-    if (!session?.provider_token) {
-      alert("Missing Google access token!");
+const proceedEvent = async () => {
+  if (!session?.provider_token) {
+    alert("Missing Google access token!");
+    return;
+  }
+
+  try {
+    const startDateTime = new Date(`${date}T${time}`);
+    const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000); // 1 hour duration
+
+    if (isNaN(startDateTime.getTime())) {
+      alert("Invalid date/time format.");
       return;
     }
-  
-    try {
-      const startDateTime = new Date(`${date}T${time}`);
-      const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000);
-  
-      if (isNaN(startDateTime.getTime())) {
-        alert("Invalid date/time format.");
-        return;
-      }
-  
-      const event = {
-        summary: sub,
-        description: "sample meeting",
-        start: {
-          dateTime: startDateTime.toISOString(),
-          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        },
-        end: {
-          dateTime: endDateTime.toISOString(),
-          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        },
-      };
-  
-      setLoading(true);
-      const response = await fetch(
-        "https://www.googleapis.com/calendar/v3/calendars/primary/events",
+
+    const event = {
+      summary: sub,
+      description: "Sample meeting with Google Meet link",
+      start: {
+        dateTime: startDateTime.toISOString(),
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      },
+      end: {
+        dateTime: endDateTime.toISOString(),
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      },
+      attendees: [
         {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${session.provider_token}`,
-            "Content-Type": "application/json",
+          email: "prahul3699@gmail.com",
+        },
+      ],
+      conferenceData: {
+        createRequest: {
+          requestId: `${Date.now()}`, // unique string for idempotency
+          conferenceSolutionKey: {
+            type: "hangoutsMeet",
           },
-          body: JSON.stringify(event),
-        }
-      );
-  
-      const result = await response.json();
-      if (result.id) {
-        alert("✅ Event added to Google Calendar!");
-        closeBox();
-      } else {
-        console.log(result);
-        alert("❌ Failed to add event. Check console.");
+        },
+      },
+    };
+
+    setLoading(true);
+    const response = await fetch(
+      "https://www.googleapis.com/calendar/v3/calendars/primary/events?conferenceDataVersion=1",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session.provider_token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(event),
       }
-    } catch (error) {
-      console.error("Failed to create event:", error);
-    } finally {
-      setLoading(false);
+    );
+
+    const result = await response.json();
+    if (result.id) {
+      const meetLink = result.hangoutLink || result.conferenceData?.entryPoints?.[0]?.uri;
+      alert(`✅ Event added with Google Meet link:\n${meetLink}`);
+      closeBox();
+    } else {
+      console.log(result);
+      alert("❌ Failed to add event. Check console.");
     }
-  };
+  } catch (error) {
+    console.error("Failed to create event:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const closeBox = () => {
     setIsGoogleMeetingOpen("hidden");
@@ -103,16 +123,12 @@ const ScheduleMeeting = ({ isGoogleMeetingOpen, setIsGoogleMeetingOpen , sub , d
       </header>
 
       <section className="error-text h-fit overflow-y-hidden mt-12">
-        <h2
-          className={`text-center font-semibold text-lime-600 text-xl`}
-        >
+        <h2 className={`text-center font-semibold text-lime-600 text-xl`}>
           Shall I add to your Google Calendar?
         </h2>
 
         {/* Text + Buttons */}
-        <div
-          className={`flex flex-col gap-2 w-[70%] mx-auto mt-4`}
-        >
+        <div className={`flex flex-col gap-2 w-[70%] mx-auto mt-4`}>
           <button
             onClick={proceedEvent}
             className="bg-green-700 text-white py-2 rounded-2xl cursor-pointer"

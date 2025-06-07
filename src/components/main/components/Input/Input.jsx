@@ -517,7 +517,6 @@ const genMail = async () => {
         sub={sub}
         date={scheduleDate || ""}
         time={scheduleTime || ""}
-        attendees={[loggedInUser, recipientEmail].filter(Boolean)} // 3. Pass attendees prop
       />
       <ToastContainer
         position="bottom-right"
